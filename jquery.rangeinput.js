@@ -11,6 +11,7 @@
 
     /**
      * TODO:
+     * Add custom messaging for 'Not a valid number'.
      */
 
 
@@ -35,6 +36,8 @@
                 intVal = val;
             else
                 intVal = null;
+
+            // console.log("intVal",intVal)
 
             if(allowEmpty && val !== "") {
                 if( intVal === null || intVal.toString() === "NaN") {
@@ -138,6 +141,20 @@
         var isInteger = options.isInteger
             , $msgEl = options.$msgElement
             , inpVal = utils.getValidInt( $inp.val(), isInteger );
+
+        if(inpVal.toString() === "NaN") {
+            $.each( options.minBtnList, function() {
+                $(this).prop( 'disabled', true );
+            });
+             $.each( options.maxBtnList, function() {
+                $(this).prop( 'disabled', true );
+            });
+            $.each( options.outOfRangeList, function() {
+                $(this).prop( 'disabled', true );
+            });
+            $msgEl.text( "Not a valid number." );
+            return;
+        }
 
         // disable/enable the minBtnList
         var min = utils.getValidInt( $inp.attr('data-min'), isInteger );
