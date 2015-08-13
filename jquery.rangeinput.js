@@ -142,6 +142,13 @@
             , $msgEl = options.$msgElement
             , inpVal = utils.getValidInt( $inp.val(), isInteger );
 
+        var showMsg = true;
+        if( !options.emptyIsOutOfRange && $inp.val() === "" ) {
+            options.inRangeCB();
+            showMsg = false;
+            // return;
+        }
+
         if(inpVal.toString() === "NaN") {
             $.each( options.minBtnList, function() {
                 $(this).prop( 'disabled', true );
@@ -152,7 +159,12 @@
             $.each( options.outOfRangeList, function() {
                 $(this).prop( 'disabled', true );
             });
+
+            // allows the btns to be disabled, but not show the validation msg if field empty
+            if(!showMsg) return;
+
             $msgEl.text( "Not a valid number." );
+            options.outOfRangeCB();
             return;
         }
 
@@ -224,7 +236,7 @@
         allowConsoleOverride: true,
         inputVal: null,
         restrictToInteger: true,
-        emptyIsOutOfRange: true,
+        emptyIsOutOfRange: false,
         $msgElement: null
     };
 
@@ -262,11 +274,13 @@
             if( !isInited ) {
 
                 var interacted = false;
-                $this.on('focus, change, keyup', function() {
+                $this.on('focus change keyup', function() {
+
                     if(!interacted && options.firstInteractionCB) {
                         interacted = true;
                         options.firstInteractionCB();
                     }
+
                     rangeCheck( $this, options );
                 });
 
