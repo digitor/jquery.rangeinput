@@ -208,6 +208,15 @@
     }
 
 
+    var incrementStepper = function($inp, amt) {
+        var inpVal = utils.getValidInt( $inp.val() ) || 0;
+
+        $inp.val(inpVal + amt);
+
+        $inp.rangeInput();
+    }
+
+
     /**
      * Default options
      * @type minBtnList {array of jQuery elements} optional - a list of buttons that should be disabled when min limit is reached
@@ -222,6 +231,7 @@
      * @type inputVal {number/int} optional - set the input to a value
      * @type restrictToInteger {boolean} optional - force input value to be an integer or float
      * @type emptyIsOutOfRange {boolean} optional - consider an empty field as out of range
+     * @type includeSteppers {boolean} optional - whether or not attach click handlers to the plus/minus btns
      * @type $msgElement {jQuery element} optional - a jQuery element that will contain the validation messaging
      */
     var defaultOptions = {
@@ -237,6 +247,7 @@
         inputVal: null,
         restrictToInteger: true,
         emptyIsOutOfRange: false,
+        includeSteppers: false,
         $msgElement: null
     };
 
@@ -245,6 +256,7 @@
      * Attributes 'data-min' and 'data-max' are mandatory.
      * Attribute 'data-msg' is optional and only works if option '$msgElement' is passed.
      * Input type must be 'text' or 'number'.
+     * Apart from the target input element, plugin makes no assumptions about elements affected. It's up to you to provide them in the options.
      */
     $.fn[pluginName] = function ( options ) {
 
@@ -283,6 +295,22 @@
 
                     rangeCheck( $this, options );
                 });
+
+                // add click handlers for plus & minus btns
+                if( options.includeSteppers ) {
+                    // loop through min btns
+                    $.each(options.minBtnList, function(i, $btn) {
+                        $btn.on("click", function() {
+                            incrementStepper($this, -1);
+                        });
+                    });
+                    // loop through max btns
+                    $.each(options.maxBtnList, function(i, $btn) {
+                        $btn.on("click", function() {
+                            incrementStepper($this, 1);
+                        });
+                    });
+                }
 
                 $this.data('inited', true);
             }
